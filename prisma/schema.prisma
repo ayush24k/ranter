@@ -14,7 +14,7 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-model Tweet {
+model Post {
     id        String   @id @default(uuid())
     userId    String
     content   String
@@ -31,7 +31,7 @@ model Like {
     tweetId String
 
     user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
-    Tweet Tweet @relation(fields: [tweetId], references: [id], onDelete: Cascade)
+    Post Post @relation(fields: [tweetId], references: [id], onDelete: Cascade)
 
     @@id([userId, tweetId])
     @@index([userId])
@@ -76,7 +76,7 @@ model User {
     sessions      Session[]
 
     //non-Next Auth
-    tweets Tweet[]
+    posts Post[]
     likes  Like[]
 
     followers User[] @relation(name: "Followers")

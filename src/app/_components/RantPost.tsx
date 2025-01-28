@@ -2,8 +2,8 @@
 import { useSession } from "next-auth/react";
 import ButtonComp from "./ButtonComp";
 import ProfileImage from "./ProfileImage";
-import { useCallback, useEffect, useRef, useState } from "react";
-
+import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
+import { api } from "~/trpc/react";
 
 export default function RantPost() {
     const session = useSession();
@@ -35,9 +35,18 @@ function RantForm() {
     }, [inputValue])
 
     if (session.status !== "authenticated") return null;
+    
+    const createPost = api.post.createProcedure.useMutation({onSuccess: (newTweet) => {
+        setInputvalue("");
+    }});
 
+    function handlePostSubmit (e: FormEvent) {
+        e.preventDefault();
+        
+        createPost.mutate({content: inputValue});
+    }
     return (
-        <form className="flex flex-col gap-2 border-b-2 px-4 py-3">
+        <form onSubmit={handlePostSubmit} className="flex flex-col gap-2 border-b-2 px-4 py-3">
             <div className="flex gap-4">
                 <ProfileImage src={session.data.user.image} />
                 <textarea
